@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="Orientation" severity="ignore" />
+    <issue id="SdCardPath" severity="ignore" />
+    <issue id="ViewHolder">
+        <ignore path="src/com/letv/android/wonderful/adapter/VideoCategoriesAdapter.java" />
+    </issue>
+</lint>

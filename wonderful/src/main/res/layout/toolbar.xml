@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wonderful="http://schemas.android.com/apk/res/com.letv.android.wonderful"
+    wonderful:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    android:layout_width="match_parent"
+    android:background="#ff8b1a1a"
+    android:layout_height="50dp" >
+    
+</android.support.v7.widget.Toolbar>

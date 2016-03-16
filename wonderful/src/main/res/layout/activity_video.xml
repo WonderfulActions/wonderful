@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffeed5d2" >
+    <SurfaceView
+        android:id="@+id/video_surface"
+        android:layout_width="match_parent"
+        android:onClick="display"
+        android:layout_height="match_parent" />
+
+    <!-- actionBar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#2fdcdcdc"
+        android:orientation="horizontal" >
+        <!-- video actions -->
+        <!-- 
+        <Button 
+            android:id="@+id/play_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="start"
+            android:text="start"
+            />
+         -->
+        <!-- 
+        <Button
+            android:id="@+id/stop_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="stop"
+            android:text="stop"
+            />
+         -->
+        <Button
+            android:id="@+id/mute_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="mute"
+            android:text="@string/mute"
+            />
+        <Button
+            android:id="@+id/repeat_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="repeat"
+            android:text="@string/repeat"
+            />
+        <View
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="#ffff0000"
+            />
+        <!-- use video -->
+        <Button
+            android:id="@+id/set_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="setAsWallpaper"
+            android:text="@string/setAsWallpaper"
+            />
+        <View
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="#ffff0000"
+            />
+        <!-- album actions -->
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="playPrevious"
+            android:text="@string/playPrevious"
+            />
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="playNext"
+            android:text="@string/playNext"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

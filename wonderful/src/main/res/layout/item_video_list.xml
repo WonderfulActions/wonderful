@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <!-- cover -->
+    <!-- 
+    <ImageView
+        android:id="@+id/video_cover_view"
+        android:layout_width="1080px"
+        android:layout_height="607px"
+        android:background="#ffffffff"
+        android:scaleType="fitCenter" />
+     -->
+    <SurfaceView 
+        android:id="@+id/video_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff000000"
+        />
+
+    <!-- name -->
+    <!-- 
+    <TextView
+        android:id="@+id/video_name_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ff767676"
+        android:textColor="#ff0000ff"
+        android:textSize="20sp"
+        android:text="atTheButter" />
+     -->
+    <!-- size and time -->
+    <!-- 3.1MB 23S -->
+    <LinearLayout
+        android:layout_alignTop="@id/video_surface_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#5f000000"
+        >
+        <TextView 
+            android:id="@+id/video_size_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffffff"
+            android:text="3.1MB"
+            />
+        <TextView 
+            android:layout_marginLeft="10dp"
+            android:id="@+id/video_time_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffffff"
+            android:text="23S"
+            />
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            />
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/video_index_view"
+        android:layout_alignTop="@id/video_surface_view"
+        android:layout_alignRight="@id/video_surface_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00ffffff"
+        android:textColor="#ffff3030"
+        android:textSize="30sp"
+        android:paddingTop="5dp"
+        android:paddingRight="15dp"
+        android:text="6"
+        />
+
+    <!-- detail -->
+    <TextView 
+        android:layout_alignBottom="@id/video_surface_view"
+        android:id="@+id/video_detail_view"
+        android:layout_width="match_parent"
+        android:layout_marginRight="50dp"
+        android:layout_height="30dp"
+        android:background="#5f000000"
+        android:textColor="#ffffffff"
+        android:text="michaelJordantop10forever"
+        />
+    
+    <!-- more actions -->
+    <ImageView 
+        android:layout_alignBottom="@id/video_surface_view"
+        android:layout_alignRight="@id/video_surface_view"
+        android:id="@+id/video_more_view"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:background="#5f000000"
+        android:src="@drawable/ic_more_vert_white_48dp"
+        />
+
+    <!-- progress pane -->
+    <LinearLayout
+        android:layout_alignBottom="@id/video_surface_view"
+        android:id="@+id/progress_pine"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:orientation="horizontal"
+        >
+        <!-- progress percent -->
+        <!--
+        <TextView 
+            android:id="@+id/video_progress_view"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:background="#fffafad2"
+            android:textColor="#f00"
+            android:textSize="20sp"
+            android:gravity="center"
+            />
+         -->
+        <!-- progress bar -->
+        <ProgressBar 
+            android:id="@+id/video_progress_bar"
+            style="@style/WonderfulProgressStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="#ff6c7b8b"
+            android:max="100"
+            />
+    </LinearLayout>
+    
+    <!-- action -->
+    <!-- collect download setAsWallpaper full -->
+    <LinearLayout
+        android:layout_below="@id/progress_pine"
+        android:id="@+id/video_action_pane"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        android:background="#ff000000"
+        android:orientation="horizontal">
+        
+        <Button
+            android:id="@+id/video_collect_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/collect"
+            android:scaleType="fitCenter"
+            android:onClick="false"
+            />
+        
+        <Button
+            android:id="@+id/video_download_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_file_download_white_48dp"
+            android:textSize="20sp"
+            android:text="@string/download"
+            android:scaleType="fitCenter"
+            />
+        <!-- 
+        <Button
+            android:id="@+id/video_repeat_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:textSize="20sp"
+            android:text="repeat"
+            />
+         -->
+        <!-- 
+        <Button
+            android:id="@+id/video_mute_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/mute"
+            />
+         -->
+         <Button
+            android:id="@+id/item_set_wallpaper_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/set_as_wallpaper"
+            android:src="@drawable/ic_wallpaper_white_48dp"
+            android:scaleType="fitCenter"
+            />
+        <Button 
+            android:id="@+id/display_full_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            android:text="@string/full"
+            android:src="@drawable/ic_fullscreen_white_48dp"
+            android:scaleType="fitCenter"
+            />
+    </LinearLayout>
+    
+    
+
+</RelativeLayout>
