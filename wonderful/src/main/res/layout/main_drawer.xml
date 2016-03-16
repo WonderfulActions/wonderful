@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="#ff8b1a1a"
+    android:orientation="vertical" >
+
+    <!-- account -->
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:orientation="vertical"
+        android:background="@drawable/account_city_bg"
+        >
+        <ImageButton 
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/account_icon"
+            />
+        <TextView 
+            android:layout_width="match_parent"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:layout_height="50dp"
+            android:text="城市稻草人"
+            />
+        <!-- 
+        <TextView 
+            android:layout_width="match_parent"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            android:layout_height="50dp"
+            android:text="谋事在人成事在天"
+            />
+         -->
+    </LinearLayout>
+    <!-- content -->
+    <ListView
+        android:id="@+id/left_drawer_list"
+        android:layout_width="200dp"
+        android:layout_height="300dp"
+        android:choiceMode="singleChoice"
+        android:background="#ff8b1a1a" />
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#000"
+        />
+    <!-- settings and others -->
+    <TextView 
+        android:id="@+id/set_wallpaper_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ff8b1a1a"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:text="@string/set_as_wallpaper"
+        />
+    <TextView 
+        android:id="@+id/settings_bt"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ff8b1a1a"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:text="@string/settings"
+        />
+    
+
+</LinearLayout>

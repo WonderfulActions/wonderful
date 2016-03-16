@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="content_type">
+        <item>@string/category_nba</item>
+        <item>@string/category_soccer</item>
+        <item>@string/category_music</item>
+        <item>@string/category_picture</item>
+        <item>@string/category_game</item>
+        <item>@string/category_history</item>
+        <item>@string/category_collected</item>
+        <item>@string/category_saved</item>
+    </array>
+    <array name="content_group">
+        <item>@string/group_latest</item>
+        <item>@string/group_hot</item>
+        <item>@string/group_top</item>
+        <item>@string/group_recommended</item>
+    </array>
+</resources>

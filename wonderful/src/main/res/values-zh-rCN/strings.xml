@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">精彩</string>
+    <string name="action_settings">设置</string>
+
+    <string name="has_volume">声音</string>
+    <string name="need_repeat">重复</string>
+    <string name="hold_shake_change">按住指纹摇晃手机更换壁纸</string>
+
+    <!-- online general -->
+    <string name="category_nba">NBA</string>
+    <string name="category_soccer">足球</string>
+    <string name="category_music">音乐</string>
+    <string name="category_picture">影业</string>
+    <string name="category_game">游戏</string>
+    <!-- online user -->
+    <string name="category_collected">收藏</string>
+    <string name="category_history">历史</string>
+    <!-- disk -->
+    <string name="category_saved">保存</string>
+    
+    <!-- content group -->
+    <string name="group_latest">最新</string>
+    <string name="group_hot">最热</string>
+    <string name="group_top">排行</string>
+    <string name="group_recommended">推荐</string>
+
+    <string name="drawer_open">drawerOpen</string>
+    <string name="drawer_close">drawerClose</string>
+
+    <string name="download_before_display">请先下载视频，然后播放</string>
+    <string name="download_before_set">请先下载视频，然后设为锁屏壁纸</string>
+    <string name="set_lock_video_successful">成功将视频设为锁屏壁纸</string>
+    <string name="set_lock_album_successful">成功将专辑设为锁屏壁纸</string>
+    
+    <string name="set_as_wallpaper">设为壁纸</string>
+    <string name="settings">设置</string>
+    
+    <!-- video actions -->
+    <string name="collect">收藏</string>
+    <string name="download">下载</string>
+    <string name="full">全屏</string>
+    <string name="download_all">全部下载</string>
+    <string name="setalbumaswallpaper">设为锁屏视频</string>
+    <string name="repeatonce">循环播放</string>
+    
+    <!-- full actions -->
+    <string name="mute">静音</string>
+    <string name="repeat">重复</string>
+    <string name="setAsWallpaper">设为壁纸</string>
+    <string name="playPrevious">播放前一</string>
+    <string name="playNext">播放后一</string>
+    
+    <string name="displayFull">全屏播放</string>
+</resources>

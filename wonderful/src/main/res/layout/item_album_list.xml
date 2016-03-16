@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    >
+
+    <!-- cover -->
+    <ImageView
+        android:id="@+id/album_cover_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff000000"
+        android:scaleType="centerCrop"
+        />
+    
+    <!-- 
+    detail
+    <TextView
+        android:layout_alignParentBottom="true"
+        android:id="@+id/album_detail_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0f000000"
+        android:textColor="#ffffffff"
+        android:text="soWonderful"
+        />
+     -->
+    
+    <!-- name -->
+    <TextView
+        android:layout_alignParentBottom="true"
+        android:id="@+id/album_name_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        android:text="MichaelJacksonTop10" />
+    
+    
+    
+    <!-- 
+    action
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#fff5f5f5"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/album_like_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="like"
+            />
+        <Button
+            android:id="@+id/album_collect_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="collect"
+            />
+        <Button
+            android:id="@+id/album_download_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="download"
+            />
+        <Button
+            android:id="@+id/album_others_button"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="others"
+            />
+    </LinearLayout>
+     -->
+
+</RelativeLayout>
