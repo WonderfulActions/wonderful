@@ -4,10 +4,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
-
     <uses-feature android:name="android.software.live_wallpaper" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -102,8 +98,8 @@
 
         <service
             android:name="com.letv.android.wonderful.wallpaper.WonderfulWallpaperService"
+            android:process="com.letv.android.wonderful.wallpaper"
             android:exported="true"
-            android:enabled="true"
             android:permission="android.permission.BIND_WALLPAPER" >
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />

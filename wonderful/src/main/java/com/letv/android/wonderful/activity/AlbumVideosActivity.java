@@ -125,7 +125,11 @@ public class AlbumVideosActivity extends AppCompatActivity {
     
     public void mute(View view) {
         // MediaUtil.muteSwitch(this);
-        MediaUtil.muteSwitch();
+//        MediaUtil.muteSwitch();
+//        throw new NullPointerException("");
+        throw new OutOfMemoryError();
+
+
     }
     
     @Override

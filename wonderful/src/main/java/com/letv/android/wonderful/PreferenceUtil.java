@@ -151,7 +151,9 @@ public class PreferenceUtil {
     
     public static String getLockVideoPath(Context context) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        Log.i(Tags.WALLPAPER_ENGINE, "getLockVideoPath preferences = " + preferences);
         final String lockVideoPath = preferences.getString(KEY_LOCK_VIDEO_PATH, null);
+//        Log.i(Tags.WALLPAPER_ENGINE, "getLockVideoPath lockVideoPath = " + lockVideoPath);
         return lockVideoPath;
     }
     

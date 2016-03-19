@@ -19,7 +19,7 @@ public class WonderfulWallpaperService extends WallpaperService {
     public Engine onCreateEngine() {
         // keep screen on
 //        keepScreenOn(System.currentTimeMillis(), true);
-
+        Log.i(TAG, "WonderfulWallpaperService onCreateEngine");
         final WonderfulWallpaperEngine wonderfulEngine = new WonderfulWallpaperEngine(this, mEngineIndex++);
         mEngines.add(wonderfulEngine);
         return wonderfulEngine;
