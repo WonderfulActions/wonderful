@@ -18,6 +18,7 @@ import com.letv.android.wonderful.PreferenceUtil;
 import com.letv.android.wonderful.R;
 import com.letv.android.wonderful.Tags;
 import com.letv.android.wonderful.adapter.VideoListAdapter;
+import com.letv.android.wonderful.display.DisplayVideoManager;
 import com.letv.android.wonderful.display.VideoDisplayManager;
 import com.letv.android.wonderful.download.DownloadVideoUtil;
 import com.letv.android.wonderful.entity.WonderfulAlbum;
@@ -304,4 +305,9 @@ public class AlbumVideosActivity extends AppCompatActivity {
         updateDownloadedIndexer(position);
     }
 
+    @Override
+    protected void onDestroy() {
+        DisplayVideoManager.getInstance().clearTask();
+        super.onDestroy();
+    }
 }

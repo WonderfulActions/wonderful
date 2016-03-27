@@ -10,6 +10,7 @@ import com.letv.android.wonderful.application.WonderfulApplication;
 public class MediaUtil {
     private static int mCurrentVolumeIndex;
 
+    /*
     public static void muteSwitch(Context context) {
         final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         final int currentVolumeIndex = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -23,6 +24,7 @@ public class MediaUtil {
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mCurrentVolumeIndex, AudioManager.FLAG_SHOW_UI);
         }
     }
+    */
     
     public static void muteSwitch() {
         final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);

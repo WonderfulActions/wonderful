@@ -24,7 +24,7 @@ public class WonderfulWallpaperService extends WallpaperService {
         mEngines.add(wonderfulEngine);
         return wonderfulEngine;
     }
-    
+
     public void removeEngine(WonderfulWallpaperEngine engine) {
         mEngines.remove(engine);
         Log.i(TAG, "mEngines size = " + mEngines.size());

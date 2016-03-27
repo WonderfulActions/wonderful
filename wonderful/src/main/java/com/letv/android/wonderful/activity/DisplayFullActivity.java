@@ -3,16 +3,17 @@ package com.letv.android.wonderful.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 
 import com.letv.android.wonderful.PreferenceUtil;
 import com.letv.android.wonderful.R;
 import com.letv.android.wonderful.Tags;
-import com.letv.android.wonderful.display.VideoDisplayManager;
+import com.letv.android.wonderful.display.DisplayVideoManager;
 import com.letv.android.wonderful.download.DownloadVideoUtil;
 import com.letv.android.wonderful.entity.WonderfulVideo;
 import com.letv.android.wonderful.util.MediaUtil;
@@ -40,7 +41,8 @@ public class DisplayFullActivity extends Activity {
     // private WonderfulVideo mVideo;
     private ArrayList<WonderfulVideo> mAlbumVideos;
     private int mPosition;
-    private SurfaceView mSurfaceView;
+//    private SurfaceView mSurfaceView;
+    private TextureView mTextureView;
     // private MediaPlayer mPlayer;
 
     
@@ -159,15 +161,16 @@ public class DisplayFullActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         getAlbumVideos();
-        mSurfaceView = (SurfaceView) findViewById(R.id.video_surface);
-        // mSurfaceView.setZOrderOnTop(true);
-        mSurfaceView.getHolder().addCallback(callback);
+//        mSurfaceView = (SurfaceView) findViewById(R.id.video_surface);
+//        mSurfaceView.getHolder().addCallback(callback);
+        mTextureView = (TextureView) findViewById(R.id.video_surface);
+        mTextureView.setSurfaceTextureListener(listener);
     }
     
     @Override
     protected void onDestroy() {
         Log.i(Tags.DISPLAY_FULL, "display full onDestroy release player");
-        VideoDisplayManager.getInstance().release();
+//        VideoDisplayManager.getInstance().release();
         super.onDestroy();
     };
 
@@ -191,6 +194,29 @@ public class DisplayFullActivity extends Activity {
     }
     */
 
+    private TextureView.SurfaceTextureListener listener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            displayCurrentVideo();
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            cancelDisplayCurrentVideo();
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            // do nothing
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            // do nothing
+        }
+    };
+
     private SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
         // surface has been use to display
         // private boolean hasBeenDisplay;
@@ -198,7 +224,7 @@ public class DisplayFullActivity extends Activity {
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             Log.i(Tags.VIDEO_ACTIVITY, "full display surface surfaceDestroyed");
-            VideoDisplayManager.getInstance().release();
+//            VideoDisplayManager.getInstance().release();
         }
         
         @Override
@@ -223,9 +249,8 @@ public class DisplayFullActivity extends Activity {
             }
             */
             // final String path = getCurrentVideoPath();
-            displayCurrentVideo(true);
+            displayCurrentVideo(false);
         }
-
     };
     
     private void displayCurrentVideo(boolean isSurfaceChanged) {
@@ -233,10 +258,27 @@ public class DisplayFullActivity extends Activity {
         Log.i(Tags.DISPLAY_FULL, "displayCurrentVideo album size = " + mAlbumVideos.size());
         Log.i(Tags.DISPLAY_FULL, "displayCurrentVideo mPosition = " + mPosition);
         final String url = mAlbumVideos.get(mPosition).getVideoUrl();
-        VideoDisplayManager.getInstance().display(url, mSurfaceView, isSurfaceChanged);
+//        VideoDisplayManager.getInstance().display(url, mSurfaceView, isSurfaceChanged);
+
     }
-    
-    
+
+    private void displayCurrentVideo() {
+        final String url = mAlbumVideos.get(mPosition).getVideoUrl();
+        if (DownloadVideoUtil.isDiskCacheAvailable(url)) {
+            final String path = DownloadVideoUtil.getCachePath(url);
+            DisplayVideoManager.getInstance().display(path, mTextureView.getSurfaceTexture());
+        }
+    }
+
+    private void cancelDisplayCurrentVideo() {
+        final String url = mAlbumVideos.get(mPosition).getVideoUrl();
+        if (DownloadVideoUtil.isDiskCacheAvailable(url)) {
+            final String path = DownloadVideoUtil.getCachePath(url);
+            DisplayVideoManager.getInstance().cancelDisplay(path, mTextureView.getSurfaceTexture());
+        }
+    }
+
+
     
     
     
@@ -246,20 +288,19 @@ public class DisplayFullActivity extends Activity {
     // ================================================================================
     // actions
     public void start(View view) {
-        displayCurrentVideo(false);
+        displayCurrentVideo();
     }
     
     public void display(View view) {
-        displayCurrentVideo(false);
+        displayCurrentVideo();
     }
     
     public void mute(View view) {
-        // VideoDisplayManager.getInstance().mute();
         MediaUtil.muteSwitch();
     }
     
     public void repeat(View view) {
-        VideoDisplayManager.getInstance().repeat();
+//        VideoDisplayManager.getInstance().repeat();
     }
     
     
@@ -334,12 +375,12 @@ public class DisplayFullActivity extends Activity {
     
     public void playNext(View view) {
         nextPosition();
-        displayCurrentVideo(false);
+        displayCurrentVideo();
     }
 
     public void playPrevious(View view) {
         previousPosition();
-        displayCurrentVideo(false);
+        displayCurrentVideo();
     }
     
     private void nextPosition() {

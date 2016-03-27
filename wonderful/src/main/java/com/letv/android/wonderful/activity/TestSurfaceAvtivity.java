@@ -128,19 +128,19 @@ public class TestSurfaceAvtivity extends Activity {
     // actions in display manager
     // ================================================================================================
     private void displayFirst() {
-        VideoDisplayManager.getInstance().display(PATH, mSurfaceView, false);
+//        VideoDisplayManager.getInstance().display(PATH, mSurfaceView, false);
     }
 
     private void displayAnother() {
-        VideoDisplayManager.getInstance().display(PATH_ANOTHER, mSurfaceView, false);
+//        VideoDisplayManager.getInstance().display(PATH_ANOTHER, mSurfaceView, false);
     }
     
     private void displayStart() {
-        VideoDisplayManager.getInstance().start();
+//        VideoDisplayManager.getInstance().start();
     }
     
     private void displayPause() {
-        VideoDisplayManager.getInstance().pause();
+//        VideoDisplayManager.getInstance().pause();
     }
     
     /*
@@ -150,12 +150,12 @@ public class TestSurfaceAvtivity extends Activity {
     */
     
     private void displayInNewSurface(SurfaceView surfaceView) {
-        VideoDisplayManager.getInstance().displayInNewSurface(surfaceView);
+//        VideoDisplayManager.getInstance().displayInNewSurface(surfaceView);
     }
     
     private void displayRelease() {
         Log.i(Tags.DISPLAY_MANAGER, "displayRelease");
-        VideoDisplayManager.getInstance().release();
+//        VideoDisplayManager.getInstance().release();
         
     }
     // ================================================================================================

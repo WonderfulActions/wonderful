@@ -3,7 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffeed5d2" >
+    <!--
     <SurfaceView
+        android:id="@+id/video_surface"
+        android:layout_width="match_parent"
+        android:onClick="display"
+        android:layout_height="match_parent" />
+    -->
+    <TextureView
         android:id="@+id/video_surface"
         android:layout_width="match_parent"
         android:onClick="display"

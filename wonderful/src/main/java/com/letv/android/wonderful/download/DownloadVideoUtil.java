@@ -36,7 +36,7 @@ public class DownloadVideoUtil {
         // get external cache path
         // final File externalCacheDir = context.getApplicationContext().getExternalCacheDir();
         // final String cacheDirPath = externalCacheDir.getAbsolutePath();
-        final String cacheDirPath = WonderfulApplication.EXTERNAl_CACHE_DIR.getAbsolutePath() + File.separator + "video";
+        final String cacheDirPath = WonderfulApplication.mCacheDir.getAbsolutePath() + File.separator + "video";
         final String fileName = "url" + url.hashCode() + ".wonderfulVideo";
         final String cacheFilePath = cacheDirPath + File.separator + fileName;
         // Log.i(Tags.WONDERFUL_VIDEO, "generateDownloadPath cache path = " + cacheFilePath);

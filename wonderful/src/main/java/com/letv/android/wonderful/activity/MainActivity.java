@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 //    ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(Tags.WONDERFUL_APP, "onCreate");
+//        Log.i(Tags.WONDERFUL_APP, "onCreate");
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

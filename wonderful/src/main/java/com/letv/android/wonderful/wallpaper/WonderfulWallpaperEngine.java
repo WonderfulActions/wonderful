@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -19,8 +20,12 @@ import android.view.SurfaceHolder;
 import com.letv.android.wonderful.OnScreenShakeListener;
 import com.letv.android.wonderful.PreferenceUtil;
 import com.letv.android.wonderful.Tags;
+import com.letv.android.wonderful.application.WonderfulApplication;
 import com.letv.android.wonderful.download.DownloadVideoUtil;
+import com.letv.android.wonderful.util.DateUtil;
+import com.letv.android.wonderful.util.LockVideoUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -31,6 +36,7 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 //    private final String SAMPLE = MainActivity.SAMPLE;
     private WonderfulWallpaperService mService;
     private int mEngineIndex;
+    private String mTimeLabel;
 //    private Movie mMovie;
 //    private float mScaleX;
 //    private float mScaleY;
@@ -39,9 +45,11 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 
     public WonderfulWallpaperEngine(WallpaperService service, int engineIndex) {
         service.super();
-        Log.i(Tags.WALLPAPER_ENGINE, "WonderfulWallpaperEngine construct");
+//        Log.i(Tags.WALLPAPER_ENGINE, "WonderfulWallpaperEngine construct");
         mService = (WonderfulWallpaperService) service;
         mEngineIndex = engineIndex;
+        mTimeLabel = DateUtil.getTimeLabel();
+        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " mTimeLabel = " + mTimeLabel);
         /*
         try {
             // get movie
@@ -127,7 +135,7 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
         // register shake listener
         final boolean isVisible = isVisible();
         if (isVisible) {
-            final boolean holdShakeChange = PreferenceUtil.holdShakeChange(mService.getApplicationContext());
+            final boolean holdShakeChange = PreferenceUtil.holdShakeChange(WonderfulApplication.mContext);
             if (holdShakeChange) {
                 if (!isRegister) {
                     registerShakeListener();
@@ -141,19 +149,19 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     
     private void registerShakeListener() {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine registerShakeListener");
-        final SensorManager manager = (SensorManager) mService.getSystemService(Context.SENSOR_SERVICE);
+        final SensorManager manager = (SensorManager) WonderfulApplication.mContext.getSystemService(Context.SENSOR_SERVICE);
         final Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         manager.registerListener(onShakeListener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void unregisterShakeListener() {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine unregisterShakeListener");
-        final SensorManager manager = (SensorManager) mService.getSystemService(Context.SENSOR_SERVICE);
+        final SensorManager manager = (SensorManager) WonderfulApplication.mContext.getSystemService(Context.SENSOR_SERVICE);
         final Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         manager.unregisterListener(onShakeListener, sensor);
     }
 
-    private final OnScreenShakeListener onShakeListener = new OnScreenShakeListener(mService) {
+    private final OnScreenShakeListener onShakeListener = new OnScreenShakeListener(WonderfulApplication.mContext) {
         @Override
         public void onLockScreenShake() {
             Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "wonderful engine onLockScreenShake");
@@ -213,6 +221,8 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
             } else {
                 mPlayer.start();
             }
+        } else {
+            displayCurrentVideo();
         }
     }
     
@@ -247,13 +257,13 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
         super.onCreate(surfaceHolder);
         // enable touch event
         setTouchEventsEnabled(true);
-        instantiateMediaPlayer();
+//        instantiateMediaPlayer();
         // set volume
         // register mute listener
         setVolume();
-        PreferenceUtil.registerOnSharedPreferenceChangeListener(mService.getApplicationContext(), hasVolumeListener);
+        PreferenceUtil.registerOnSharedPreferenceChangeListener(WonderfulApplication.mContext, hasVolumeListener);
         // register loop listener
-        PreferenceUtil.registerOnSharedPreferenceChangeListener(mService.getApplicationContext(), needRepeatListener);
+        PreferenceUtil.registerOnSharedPreferenceChangeListener(WonderfulApplication.mContext, needRepeatListener);
         
 //        final int width = getDesiredMinimumWidth();
 //        final int height = super.getDesiredMinimumHeight();
@@ -262,11 +272,11 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 //        surfaceHolder.setFixedSize(width, height);
 //        final Rect rect = new Rect(0, 0, 640, 360);
 //        surfaceHolder.lockCanvas(rect);
-        Log.i(Tags.WALLPAPER_ENGINE, "return onCreate");
+//        Log.i(Tags.WALLPAPER_ENGINE, "return onCreate");
     }
     
     private void setVolume() {
-        final boolean hasVolume = PreferenceUtil.hasVolume(mService.getApplicationContext());
+        final boolean hasVolume = PreferenceUtil.hasVolume(WonderfulApplication.mContext);
         if (hasVolume) {
             unmute();
         } else {
@@ -308,9 +318,9 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     public void onDestroy() {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " " + "WonderfulWallpaperEngine onDestroy");
         // unregister mute listener
-        PreferenceUtil.unregisterOnSharedPreferenceChangeListener(mService.getApplicationContext(), hasVolumeListener);
+        PreferenceUtil.unregisterOnSharedPreferenceChangeListener(WonderfulApplication.mContext, hasVolumeListener);
         // unregister loop listener
-        PreferenceUtil.unregisterOnSharedPreferenceChangeListener(mService.getApplicationContext(), needRepeatListener);
+        PreferenceUtil.unregisterOnSharedPreferenceChangeListener(WonderfulApplication.mContext, needRepeatListener);
         mService.removeEngine(this);
         super.onDestroy();
     }
@@ -329,9 +339,9 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 
 
 
-
+    /*
     abstract class DelayResponseListener {
-        private static final long DELAY_TIME = 1 * 1000;
+//        private static final long DELAY_TIME = 1 * 1000;
         private static final int WHAT = 99;
 
         private volatile boolean mLastState;
@@ -352,35 +362,41 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
             };
         };
 
-        public void onStateChanged(boolean state) {
+        public void onStateChanged(boolean state, long delay) {
             // update visible state
             mLastState = state;
             // remove previous message
             MAIN_HANDLER.removeMessages(WHAT);
             // delay response
             final Message message = Message.obtain(null, WHAT, (mLastState ? 1: 0), -1);
-            MAIN_HANDLER.sendMessageDelayed(message, DELAY_TIME);
+            MAIN_HANDLER.sendMessageDelayed(message, delay);
         }
 
         public abstract void onResponseDelay(boolean state);
     }
+*/
     
+    private static final long VISIBLE_DELAY = 30;
+
     @Override
     public void onVisibilityChanged(boolean visible) {
         super.onVisibilityChanged(visible);
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine onVisibilityChanged visible = " + visible);
-        delayResponseListener.onStateChanged(visible);
+        delayResponseListener.onStateChanged(visible, VISIBLE_DELAY);
+//        handleVisibilityChanged(visible);
     }
     
     private DelayResponseListener delayResponseListener = new DelayResponseListener() {
         @Override
         public void onResponseDelay(boolean state) {
-            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " delayResponseListener response visible = " + state);
+            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " --- delayResponseListener response visible = " + state);
             handleVisibilityChanged(state);
         }
     };
     
     protected void handleVisibilityChanged(boolean visible) {
+        final boolean isPreview = isPreview();
+//        Log.i(Tags.WALLPAPER_ENGINE, "isPreview = " + isPreview);
         if (visible) {
             // visible
 //            if (noPrepare) {
@@ -412,17 +428,15 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     @Override
     public void onTouchEvent(MotionEvent event) {
 //        super.onTouchEvent(event);
-        /*
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " onTouchEvent event action = " + event.getAction());
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " onTouchEvent event x = " + event.getX());
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " onTouchEvent event y = " + event.getY());
-        */
     }
 
     @Override
     public void onSurfaceCreated(SurfaceHolder holder) {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " " + "WonderfulWallpaperEngine onSurfaceCreated");
-        super.onSurfaceCreated(holder);
+//        super.onSurfaceCreated(holder);
 //        mHolder = holder;
         // init mediaPlayer
 //        final Surface surface = holder.getSurface();
@@ -444,23 +458,53 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 //        displayWithMediaPlayer(holder, mService);
 //        displayWithMovie(holder);
         getAlbumPaths();
-        registerOnLockPathChangeListener();
+//        registerOnLockPathChangeListener();
+        observeLockVideoSetting();
+    }
+
+    private void observeLockVideoSetting() {
+        Log.i(Tags.WALLPAPER_ENGINE, "--- observeLockVideoSetting");
+        final File settingFile = LockVideoUtil.generateLockVideoSetting();
+        if (settingFile != null) {
+            final String settingPath = settingFile.getAbsolutePath();
+            final FileObserver observer = new FileObserver(settingPath) {
+                @Override
+                public void onEvent(int event, String path) {
+//                    Log.i(Tags.WALLPAPER_ENGINE, "--- observeLockVideoSetting event = " + event);
+                    if (event == FileObserver.CLOSE_WRITE) {
+                        Log.i(Tags.WALLPAPER_ENGINE, "--- observeLockVideoSetting close write path = " + path);
+                        onLockPathsChanged();
+                    }
+                }
+            };
+            observer.startWatching();
+        }
+    }
+
+    private void onLockPathsChanged() {
+        // get paths
+        // if visible, display current video
+        getAlbumPaths();
+        if (isVisible()) {
+            displayCurrentVideo();
+        }
     }
 
     @Override
     public void  onSurfaceDestroyed(SurfaceHolder holder) {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " " + "WonderfulWallpaperEngine onSurfaceDestroyed");
         super.onSurfaceDestroyed(holder);
-        recycleMediaPlayer();
+        releaseMediaPlayer();
 //        mHolder = null;
     }
-    
+
+    /*
     @Override
     public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " " + "WonderfulWallpaperEngine onSurfaceChanged");
 //        mHolder = holder;
 //        displayCurrentVideo();
-        /*
+        *//*
         super.onSurfaceChanged(holder, format, width, height);
         final float movieWidth = mMovie.width();
         final float movieHeight = mMovie.height();
@@ -473,28 +517,42 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "mScaleX = " + mScaleX);
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "mScaleY = " + mScaleY);
         displayWithMovie(holder, mScaleX, mScaleY, mMovie);
-        */
+        *//*
 //        final Canvas canvas = holder.lockCanvas();
 //        canvas.rotate(0.7F);
 //        canvas.save();
 //        holder.unlockCanvasAndPost(canvas);
 //        displayWithMediaPlayer(holder, mService);
-        /*
+        *//*
         PlayerThread mPlayer = new PlayerThread(holder.getSurface());
         mPlayer.start();
-        */
+        *//*
 
         // loop display
 //        final Surface surface = holder.getSurface();
 //        while (PreferenceUtil.loop(mService)) {
 //            MediaCodecPlayer.getInstance().displayMediaAsync(mService, SAMPLE, surface);
 //        }
+
+        // TODO display current
+
+
+
+
+
+
+
+
+
+
+
     }
+    */
     
     private int mCurrentVolumeIndex;
     
     public void switchMute() {
-        final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
         final int currentVolumeIndex = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 //        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " currentVolumeIndex = " + currentVolumeIndex);
         if (currentVolumeIndex != 0) {
@@ -508,7 +566,7 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     }
     
     public void mute() {
-        final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
         final int currentVolumeIndex = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 //        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " currentVolumeIndex = " + currentVolumeIndex);
         if (currentVolumeIndex != 0) {
@@ -519,7 +577,7 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     
     public void unmute() {
         if (mCurrentVolumeIndex != 0) {
-            final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+            final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
             final int currentVolumeIndex = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " currentVolumeIndex = " + currentVolumeIndex);
             if (currentVolumeIndex == 0) {
@@ -530,50 +588,47 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     
 //    private float mVolume;
 //    private float VOLUME_STEP = 0.1f;
-    
+
+    /*
     public void increase() {
 //        mVolume += VOLUME_STEP;
 //        mPlayer.setVolume(mVolume, mVolume);
-        final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
         audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
     }
-    
+
     public void decrease() {
 //        mVolume -= VOLUME_STEP;
 //        mPlayer.setVolume(mVolume, mVolume);
-        final AudioManager audioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager audioManager = (AudioManager) WonderfulApplication.mContext.getSystemService(Context.AUDIO_SERVICE);
         audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
     }
+    */
     
     /*
     public void loop() {
         PreferenceUtil.switchRepeatState(mService);
     }
     */
-    
+
+    /*
     private void instantiateMediaPlayer() {
         if (mPlayer == null) {
             // instantiate player
             mPlayer = new MediaPlayer();
         }
     }
+    */
 
     private void releaseMediaPlayer() {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " !!!!! wallpaper engine release player");
         if (mPlayer != null) {
             // release player
             mPlayer.release();
-        }
-    }
-
-    private void recycleMediaPlayer() {
-        if (mPlayer != null) {
-            // release player
-            mPlayer.release();
             mPlayer = null;
         }
     }
-    
+
     public void prepareAsync() {
         if (mPlayer != null) {
             mPlayer.prepareAsync();
@@ -636,19 +691,20 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
     }
     
     private String getCurrentVideoPath() {
+        Log.i(Tags.WALLPAPER_ENGINE, "mLockVideoPaths = " + mLockVideoPaths + mLockVideoPaths.size());
         return mLockVideoPaths.get(mLockVideoPosition);
     }
     
     private void getAlbumPaths() {
         Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine getAlbumPaths");
-        final String lockVideoPath = PreferenceUtil.getLockVideoPath(mService.getApplicationContext());
-//        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine lock video path = " + lockVideoPath);
+        /*
+        final String lockVideoPath = PreferenceUtil.getLockVideoPath();
+        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine lock video path = " + lockVideoPath);
         mLockVideoPaths.clear();
-        
-        final Set<String> paths = PreferenceUtil.getLockAlbumPaths(mService.getApplicationContext());
+        final Set<String> paths = PreferenceUtil.getLockAlbumPaths();
         if (paths != null) {
             for (String path : paths) {
-//                Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine album path = " + path);
+                Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine album path = " + path);
                 mLockVideoPaths.add(path);
                 if (lockVideoPath.equals(path)) {
                     mLockVideoPosition = mLockVideoPaths.size() - 1;
@@ -659,11 +715,34 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
             mLockVideoPaths.add(lockVideoPath);
             mLockVideoPosition = 0;
         }
+        */
+
+        // clear paths
+        mLockVideoPaths.clear();
+        // reset position
+        mLockVideoPosition = 0;
+        // add paths
+
+        /*
+        final Set<String> paths = PreferenceUtil.getLockAlbumPaths();
+        for (String path : paths) {
+            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " wonderful engine album path = " + path);
+            mLockVideoPaths.add(path);
+        }
+        */
+
+        final ArrayList<String> paths = LockVideoUtil.getLockVideoPaths();
+        mLockVideoPaths.addAll(paths);
+        Log.i(Tags.WALLPAPER_ENGINE, "mLockVideoPaths = " + mLockVideoPaths + mLockVideoPaths.size());
+
+
+
+
     }
     
     private void registerOnLockPathChangeListener() {
         // TODO Auto-generated method stub
-        PreferenceUtil.registerOnSharedPreferenceChangeListener(mService.getApplicationContext(), onLockAlbumChangeListener);
+        PreferenceUtil.registerOnSharedPreferenceChangeListener(WonderfulApplication.mContext, onLockAlbumChangeListener);
     }
     
     // TODO
@@ -677,21 +756,25 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
                 final String currentVideoPath = mLockVideoPaths.get(mLockVideoPosition);
                 */
 //                if (newVideoPath != null && !newVideoPath.equals(currentVideoPath)) {
-                    getAlbumPaths();
-                    if (isVisible()) {
-                        displayCurrentVideo();
-                    } else {
-                        final String path = getCurrentVideoPath();
-                        Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "!!!!!set no prepare new lock albums path = " + path);
+
+                // update paths
+                getAlbumPaths();
+
+
+                // display current video
+                if (isVisible()) {
+                    displayCurrentVideo();
+                } else {
+                    final String path = getCurrentVideoPath();
+                    Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "!!!!!set no prepare new lock albums path = " + path);
 //                        setVideoSourceNoPrepare(path);
-                        // TODO update video paths
-                        getAlbumPaths();
-                    }
+                    // TODO update video paths
+                    getAlbumPaths();
+                }
 //                }
             }
         }
     };
-    
     // ===========================================================================================
     
     
@@ -701,15 +784,20 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
 
     private void displayVideo(String path) {
         if (mPlayer == null) {
+//            Log.i(Tags.WALLPAPER_ENGINE, "--- new player");
             mPlayer = new MediaPlayer();
         }
         // reset
+        Log.i(Tags.WALLPAPER_ENGINE, "--- reset player");
         mPlayer.reset();
         // init player
+        Log.i(Tags.WALLPAPER_ENGINE, "--- config player");
         configureMediaPlayer();
         // set data source
+        Log.i(Tags.WALLPAPER_ENGINE, "--- set data source");
         setDataSource(path);
         // prepare async
+        Log.i(Tags.WALLPAPER_ENGINE, "--- prepare async");
         mPlayer.prepareAsync();
     }
 
@@ -736,7 +824,7 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
                 final String persistentPath = DownloadVideoUtil.getCachePath(path);
                 path = persistentPath;
             }
-//            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "!!!!!!!!!!!!wonderful engine displayer path = " + path);
+            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "!!!!!!!!!!!!wonderful engine setDataSource path = " + path);
             mPlayer.setDataSource(path);
         } catch (IllegalArgumentException | SecurityException | IllegalStateException | IOException e) {
             Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "setDataSource exception");
@@ -763,9 +851,9 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
             Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + " !!!!! wonderful engine mediaplayer onError what = " + what + " extra = " + extra);
-            // TODO
-            
-            return false;
+            releaseMediaPlayer();
+//            displayCurrentVideo();
+            return true;
         }
     };
     
@@ -773,24 +861,31 @@ public class WonderfulWallpaperEngine extends WallpaperService.Engine {
         @Override
         public void onPrepared(MediaPlayer mp) {
 //            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "wonderful engine mediaplayer onPrepared");
+            Log.i(Tags.WALLPAPER_ENGINE, "--- player prepared");
             mPlayer.start();
         }
     };
-    
+
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
-//            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "wonderful engine mediaplayer onCompletion");
+            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "wonderful engine mediaplayer onCompletion");
             // TODO
-            
+
         }
     };
-    
+
     private MediaPlayer.OnSeekCompleteListener onSeekCompleteListener = new MediaPlayer.OnSeekCompleteListener() {
         @Override
         public void onSeekComplete(MediaPlayer mp) {
 //            Log.i(Tags.WALLPAPER_ENGINE, mEngineIndex + "wonderful engine mediaplayer onSeekComplete");
             // TODO
+
+
+
+
+
+
             
         }
     };

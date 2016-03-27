@@ -79,6 +79,8 @@ public class VideoDisplayManager {
             displayNewTask(url, surfaceView);
         }
     }
+
+
     
     public void displayInNewSurface(SurfaceView surfaceView) {
         Log.i(Tags.DISPLAY_MANAGER, "!!!!!displayInNewSurface");
@@ -103,26 +105,27 @@ public class VideoDisplayManager {
     }
     
     
-    public void displayCurrentTask() {
+    private void displayCurrentTask() {
         Log.i(Tags.DISPLAY_MANAGER, "displayCurrentTask");
         if (mTask != null) {
             displayVideo(mTask.getUrl());
         }
     }
     
-    public void start() {
+    private void start() {
         if (mPlayer != null && mTask != null) {
             mPlayer.start();
 //            isPausing = false;
         }
     }
-    
-    public void pause() {
+
+    private void pause() {
         if (mPlayer != null && mTask != null) {
             mPlayer.pause();
 //            isPausing = true;
         }
     }
+
     
 //    private boolean isPausing = false;
     
@@ -167,6 +170,7 @@ public class VideoDisplayManager {
     
     // ==================================================================================
     // current task actions
+    /*
     public void mute(String url) {
         // current task
         if (mTask != null && url.equals(mTask.getUrl())) {
@@ -178,7 +182,9 @@ public class VideoDisplayManager {
             }
         }
     }
-    
+    */
+
+    /*
     public void mute() {
         // current task
         if (mTask != null) {
@@ -190,6 +196,8 @@ public class VideoDisplayManager {
             }
         }
     }
+    */
+
     
     public void repeat() {
         if (mTask != null && mPlayer != null) {
@@ -359,11 +367,7 @@ public class VideoDisplayManager {
         }
     };
     
-    /*
-    private boolean hasFirstInitSeek = false;
-    private int seekCount = 0;
-    */
-    
+
     
     
     
@@ -389,6 +393,7 @@ public class VideoDisplayManager {
         }
     }
     
+    /*
     public void displayNextVideo() {
         // TODO
         
@@ -398,9 +403,9 @@ public class VideoDisplayManager {
     
     public void displayPreviousVideo() {
         // TODO
-        
-        
+
     }
+*/
     
     
 

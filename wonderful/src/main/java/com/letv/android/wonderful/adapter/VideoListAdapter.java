@@ -3,17 +3,19 @@ package com.letv.android.wonderful.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,12 +24,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.letv.android.wallpaper.cache.NewCacheManager;
+import com.letv.android.wallpaper.display.DisplayUtil;
 import com.letv.android.wallpaper.listener.OnClickDoubleListener;
 import com.letv.android.wonderful.PreferenceUtil;
 import com.letv.android.wonderful.R;
 import com.letv.android.wonderful.Tags;
 import com.letv.android.wonderful.activity.DisplayFullActivity;
 import com.letv.android.wonderful.application.WonderfulApplication;
+import com.letv.android.wonderful.display.DisplayVideoManager;
 import com.letv.android.wonderful.display.VideoDisplayManager;
 import com.letv.android.wonderful.download.DownloadVideoMananger;
 import com.letv.android.wonderful.download.DownloadVideoTask;
@@ -41,9 +45,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
+    private ImageView currentCoverView;
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
-        private SurfaceView surfaceView;
+//        private SurfaceView surfaceView;
+        private TextureView textureView;
+        private ImageView coverView;
         // public ImageView coverView;
         // public TextView nameView;
         public TextView detailView;
@@ -65,7 +72,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
 
         public VideoViewHolder(View itemView) {
             super(itemView);
-            surfaceView = (SurfaceView) itemView.findViewById(R.id.video_surface_view);
+//            surfaceView = (SurfaceView) itemView.findViewById(R.id.video_surface_view);
+            textureView = (TextureView) itemView.findViewById(R.id.video_surface_view);
+            coverView = (ImageView) itemView.findViewById(R.id.video_cover_view);
             /*
             surfaceView.setZOrderOnTop(true);
             surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
@@ -108,7 +117,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     @Override
     public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View videoView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_video_list, parent, false);
-        final int width = WonderfulApplication.WIDTH;
+        final int width = WonderfulApplication.mDisplayWidth;
         final int height = width * 9/16;
         final ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
         videoView.setLayoutParams(params);
@@ -162,24 +171,26 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         final String url = video.getVideoUrl();
         final String coverUrl = video.getCoverUrl();
         Log.i(Tags.DISPLAY_VIDEO, "video cover url = " + video.getCoverUrl());
+
+
         
         // display video detail
         // holder.coverView.setImageResource(video.getCoverRes());
         // DisplayUtil.display(holder.surfaceView, video.getCoverUrl());
         
-        
-        final SurfaceView surfaceView = holder.surfaceView;
-        setSurfaceBackground(surfaceView, coverUrl);
-        
-        
-        
+//        final SurfaceView surfaceView = holder.surfaceView;
+        Log.i(Tags.WONDERFUL_APP, "--- set cover = " + coverUrl);
+
+        holder.coverView.setTag(coverUrl);
+        setVideoCover(holder.coverView, coverUrl);
+
         holder.positionView.setText((position + 1) + "");
         
         // holder.nameView.setText(video.getName());
         // holder.detailView.setText(video.getDetail());
         holder.detailView.setText(video.getName());
+
         final boolean isDiskCacheAvailable = DownloadVideoUtil.isDiskCacheAvailable(url);
-        
         final int progress = (isDiskCacheAvailable ? 100 : 0);
         holder.progressBar.setProgress(progress);
         
@@ -190,124 +201,156 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             }
         });
         
-        /*
-        if (isDiskCacheAvailable) {
-            mDownloadCallback.onVideoDownloaded(position);
-        }
-        */
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        // set onClickListeners
-        holder.surfaceView.setOnClickListener(new OnClickDoubleListener() {
+
+        holder.textureView.setOnClickListener(new OnClickDoubleListener() {
             @Override
-            public void onClickDouble(View v) {
-                final Context context = v.getContext();
-                displayFull(context, position);
-            }
-            
-            private boolean hasBeenClicked;
-            @Override
-            public void onClickOnce(View view) {
-                Log.i(Tags.DISPLAY_VIDEO, "video surfaceView onclick position = " + position);
-                Log.i(Tags.DISPLAY_VIDEO, "holder.surfaceView hasBeenClicked = " + hasBeenClicked);
-                if (!hasBeenClicked) {
-                    // download video
-                    final String path  = DownloadVideoUtil.generateDownloadPath(url);
-                    // final TextView progressCounter = holder.progressView;
-                    final ProgressBar progressBar = holder.progressBar;
-                    // Log.i(Tags.DISPLAY_VIDEO, "list item download video before display");
-                    video.addObserver(new WonderfulVideo.DownloadedObserver() {
-                        @Override
-                        public void isDownloaded(boolean isDownloaded) {
-                            if (isDownloaded) {
-                                Log.i(Tags.DISPLAY_VIDEO, "video is downloaded url = " + url);
-                                displayVideo(holder, position, url);
+            public void onClickOnce(View v) {
+                Log.i(Tags.WONDERFUL_APP, "--- textureView onClickOnce");
+
+                // is downloaded
+                if (DownloadVideoUtil.isDiskCacheAvailable(url)) {
+                    final String path = DownloadVideoUtil.getCachePath(url);
+                    final String currentPath = DisplayVideoManager.getInstance().getCurrentPath();
+                    Log.i(Tags.WONDERFUL_APP, "------- path = " + path);
+                    Log.i(Tags.WONDERFUL_APP, "------- currentPath = " + currentPath);
+                    // check is current path
+                    if (path != null) {
+                        // if new path, recovery old path cover
+                        if (!path.equals(currentPath)) {
+                            // recovery old cover
+                            Log.i(Tags.WONDERFUL_APP, "------- currentCoverView = " + currentCoverView);
+                            if (currentCoverView != null) {
+                                final String oldCoverUrl = (String) currentCoverView.getTag();
+                                Log.i(Tags.WONDERFUL_APP, "!!!!!!!! recovery oldCoverUrl = " + oldCoverUrl);
+                                if (oldCoverUrl != null) {
+                                    setVideoCover(currentCoverView, oldCoverUrl);
+                                }
                             }
                         }
-                    });
-                    persistentVideo(url, path, null, progressBar, video);
-                } else {
-                    displayVideo(holder, position, url);
+
+                        // cache coverView
+                        currentCoverView = holder.coverView;
+                        // remove cover
+                        Log.i(Tags.WONDERFUL_APP, "--- remove cover = " + coverUrl);
+                        DisplayUtil.cancelDisplay(holder.coverView);
+                        holder.coverView.setImageDrawable(null);
+                        // display video
+                        final SurfaceTexture surfaceTexture = holder.textureView.getSurfaceTexture();
+                        DisplayVideoManager.getInstance().display(path, surfaceTexture);
+
+                    }
+
+
                 }
-                
-                
-                
-                hasBeenClicked = true;
+
             }
-            private void displayVideo(final VideoViewHolder holder, final int position, final String url) {
-                final boolean isValid = holder.surfaceView.getHolder().getSurface().isValid();
-                Log.i(Tags.DISPLAY_VIDEO, "isValid = " + isValid);
-                if (isValid) {
-                    // remove background
-                    holder.surfaceView.setBackgroundColor(0x00ffffff);
-                    setmDisplayingPosition(position);
-                    VideoDisplayManager.getInstance().display(url, holder.surfaceView, false);
+
+            @Override
+            public void onClickDouble(View v) {
+                Log.i(Tags.WONDERFUL_APP, "--- textureView onClickDouble !!!");
+                // display in fullscreen
+
+
+                // TODO test
+                /*
+                // cancel display video
+                final String path = DownloadVideoUtil.getCachePath(url);
+                final SurfaceTexture surfaceTexture = holder.textureView.getSurfaceTexture();
+                DisplayVideoManager.getInstance().cancelDisplay(path, surfaceTexture);
+
+                // show last cover
+                Log.i(Tags.WONDERFUL_APP, "--- show last cover = " + coverUrl);
+                final Bitmap lastFrame = holder.textureView.getBitmap();
+                holder.coverView.setImageBitmap(lastFrame);
+                */
+
+
+                // cancel display
+                DisplayVideoManager.getInstance().cancelDisplayCurrentTask();
+                // recovery displaying cover
+                Log.i(Tags.WONDERFUL_APP, "------- currentCoverView = " + currentCoverView);
+                if (currentCoverView != null) {
+                    final String oldCoverUrl = (String) currentCoverView.getTag();
+                    Log.i(Tags.WONDERFUL_APP, "!!!!!!!! recovery oldCoverUrl = " + oldCoverUrl);
+                    if (oldCoverUrl != null) {
+                        setVideoCover(currentCoverView, oldCoverUrl);
+                    }
                 }
+
+                // display full
+                displayFull(v.getContext(), position);
+
             }
         });
-        // cache latest position
-        holder.surfaceView.setTag(position);
-        holder.surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            
+
+        holder.textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                /*
-                Log.i(Tags.DISPLAY_VIDEO, position + " surfaceDestroyed");
-                Log.i(Tags.DISPLAY_VIDEO, "mDisplayingPosition = " + mDisplayingPosition);
-                */
-                if (position == mDisplayingPosition) {
-                    Log.i(Tags.DISPLAY_VIDEO, position + " surfaceDestroyed");
-                    VideoDisplayManager.getInstance().release();
-                }
-            }
-            
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                if (position == mDisplayingPosition) {
-                    Log.i(Tags.DISPLAY_VIDEO, position + " surfaceCreated");
-                }
-            }
-            
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-                /*
-                Log.i(Tags.DISPLAY_VIDEO, position + " surfaceChanged");
-                Log.i(Tags.DISPLAY_VIDEO, "mDisplayingPosition = " + mDisplayingPosition);
-                */
-                if (position == mDisplayingPosition) {
-                    Log.i(Tags.DISPLAY_VIDEO, position + "new surfaceChanged = " + position);
-                    final Object object = holder.surfaceView.getTag();
-                    if (object == null) {
-                        // VideoDisplayManager.getInstance().displayInNewSurface(holder.surfaceView);
-                    } else {
-                        final int latestPosition = (int) object;
-                        Log.i(Tags.DISPLAY_VIDEO, "latestPosition = " + latestPosition);
-                        /*
-                        Log.i(Tags.DISPLAY_VIDEO, "list surface width = " + width);
-                        Log.i(Tags.DISPLAY_VIDEO, "list surface height = " + height);
-                        */
-                        if (position == latestPosition) {
-                            // VideoDisplayManager.getInstance().displayInNewSurface(holder.surfaceView);
-                            // recovery background
-                            // Log.i(Tags.DISPLAY_VIDEO, "recovery surface background");
-                            // final String coverUrl = video.getCoverUrl();
-                            // setSurfaceBackground(holder.surfaceView, coverUrl);
-                            displayVideoInNewSurface(holder.surfaceView, position, coverUrl);
-                        }
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                // check is cached
+                if (DownloadVideoUtil.isDiskCacheAvailable(url)) {
+                    final String path = DownloadVideoUtil.getCachePath(url);
+                    final String currentPath = DisplayVideoManager.getInstance().getCurrentPath();
+                    // check is current path
+                    if (path != null && path.equals(currentPath)) {
+                        onCurrentSurfaceAvailable(path, surface);
                     }
                 }
             }
+
+            private void onCurrentSurfaceAvailable(String path, SurfaceTexture surface) {
+                Log.i(Tags.WONDERFUL_APP, "--- onCurrentSurfaceAvailable");
+                Log.i(Tags.WONDERFUL_APP, "--- available path = " + path);
+                // remove cover
+                Log.i(Tags.WONDERFUL_APP, "--- remove cover = " + coverUrl);
+                DisplayUtil.cancelDisplay(holder.coverView);
+                holder.coverView.setImageDrawable(null);
+                // replay video
+//                DisplayVideoManager.getInstance().replay(path, surface);
+                DisplayVideoManager.getInstance().display(path, surface);
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                // check is cached
+                if (DownloadVideoUtil.isDiskCacheAvailable(url)) {
+                    final String path = DownloadVideoUtil.getCachePath(url);
+                    final String currentPath = DisplayVideoManager.getInstance().getCurrentPath();
+                    // check is current path
+                    if (path != null && path.equals(currentPath)) {
+                        onCurrentSurfaceDestroyed(path, surface);
+                    }
+                }
+                return true;
+            }
+
+            private void onCurrentSurfaceDestroyed(String path, SurfaceTexture surface) {
+                Log.i(Tags.WONDERFUL_APP, "--- onCurrentSurfaceDestroyed");
+                Log.i(Tags.WONDERFUL_APP, "--- destroy path = " + path);
+                // cancel display video
+                DisplayVideoManager.getInstance().cancelDisplay(path, surface);
+                // show last frame
+                /*
+                Log.i(Tags.WONDERFUL_APP, "--- show last cover = " + coverUrl);
+                final Bitmap lastFrame = holder.textureView.getBitmap();
+                holder.coverView.setImageBitmap(lastFrame);
+                */
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+                // Log.i(Tags.WONDERFUL_APP, "onSurfaceTextureSizeChanged");
+                // do nothing
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+                // Log.i(Tags.WONDERFUL_APP, "textureView onSurfaceTextureUpdated");
+                // do nothing
+            }
         });
+
+
+
         holder.collectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -432,7 +475,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
     
     private void setAsWallpaper(final String url) {
-        Log.i(Tags.DISPLAY_VIDEO, "set video as wallpaper url = " + url);
+        Log.i(Tags.WONDERFUL_APP, "set video as wallpaper url = " + url);
         PreferenceUtil.cacheLockVideo(url);
     }
     
@@ -449,12 +492,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         DisplayFullActivity.displayVideo(context, mVideos, position);
     }
 
-    private void setSurfaceBackground(final SurfaceView surfaceView, final String coverUrl) {
+    private void setVideoCover(final ImageView coverView, final String coverUrl) {
         // display cover async
+        /*
         new Thread(new Runnable() {
             @Override
             public void run() {
-                /*
+                *//*
                 final InputStream inputStream = getInputStreambyStr(video.getCoverUrl());
                 final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                 try {
@@ -463,13 +507,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     e.printStackTrace();
                 }
                 final BitmapDrawable background = new BitmapDrawable(bitmap);
-                holder.surfaceView.post(new Runnable() {
+                holder.coverView.post(new Runnable() {
                     @Override
                     public void run() {
-                        holder.surfaceView.setBackground(background);
+                        holder.coverView.setBackground(background);
                     }
                 });
-                */
+                *//*
                 
                 final byte[] byteArray = NewCacheManager.getByteArray(coverUrl, null, true, true);
                 if (byteArray != null) {
@@ -477,18 +521,24 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
                     MAIN_HANDLER.post(new Runnable() {
                         @Override
                         public void run() {
-                            surfaceView.setBackground(new BitmapDrawable(bitmap));
+                            Log.i(Tags.WONDERFUL_APP, "setSurfaceBackground bitmap = " + bitmap);
+                            coverView.setBackground(new BitmapDrawable(bitmap));
                         }
                     });
                 }
             }
         }).start();
+        */
+        DisplayUtil.cancelDisplay(coverView);
+        coverView.setBackground(null);
+        DisplayUtil.display(coverView, coverUrl);
     }
     
-    
+    /*
     protected void muteVideoInSurfaceView(String url) {
         VideoDisplayManager.getInstance().mute(url);
     }
+    */
 
     /*
     private static void displayVideoInSurfaceView(SurfaceView surfaceView, String url) {

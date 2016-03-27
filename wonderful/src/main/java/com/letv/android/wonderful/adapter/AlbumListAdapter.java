@@ -64,7 +64,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.Albu
     public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(Tags.ALBUM_ADAPTER, "onCreateViewHolder");
         final View albumView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album_list, parent, false);
-        final int width = WonderfulApplication.WIDTH;
+        final int width = WonderfulApplication.mDisplayWidth;
         final int height = width * 9/16;
         final ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
         albumView.setLayoutParams(params);

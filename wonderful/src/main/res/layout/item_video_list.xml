@@ -4,21 +4,37 @@
     android:layout_height="match_parent"
     >
 
-    <!-- cover -->
-    <!-- 
-    <ImageView
-        android:id="@+id/video_cover_view"
-        android:layout_width="1080px"
-        android:layout_height="607px"
-        android:background="#ffffffff"
-        android:scaleType="fitCenter" />
-     -->
+        <!--
     <SurfaceView 
         android:id="@+id/video_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ff000000"
         />
+        -->
+    <!--
+    <ImageView
+        android:id="@+id/video_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff00ff00"
+        android:src="@drawable/sea"
+        />
+    -->
+    <TextureView
+        android:id="@+id/video_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff00ff00"
+        />
+    <!-- cover -->
+    <ImageView
+        android:id="@+id/video_cover_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00ffffff"
+        android:clickable="false"
+        android:scaleType="fitCenter" />
 
     <!-- name -->
     <!-- 
