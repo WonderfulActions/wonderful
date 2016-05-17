@@ -4,6 +4,8 @@ package com.letv.android.wonderful.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.letv.android.wonderful.download.DownloadVideoRunnable;
+
 import java.util.ArrayList;
 
 public class WonderfulVideo implements Parcelable {
@@ -177,42 +179,47 @@ public class WonderfulVideo implements Parcelable {
 
     public void setDownloaded(boolean isDownloaded) {
         this.isDownloaded = isDownloaded;
-        notifyDownloaded(isDownloaded);
-    }
-    // =====================================================================
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // =====================================================================
-    private ArrayList<DownloadedObserver> mObservers = new ArrayList<WonderfulVideo.DownloadedObserver>();
-    
-    public interface DownloadedObserver {
-        public void isDownloaded(boolean isDownloaded);
-    }
-    
-    private void notifyDownloaded(boolean isDownloaded) {
-        for (DownloadedObserver observer : mObservers) {
-            observer.isDownloaded(isDownloaded);
+        if (isDownloaded) {
+            notifyComplete();
         }
     }
 
-    public void addObserver(DownloadedObserver observer) {
-        mObservers.add(observer);
+    private int progress;
+
+    public int getProgress() {
+        return progress;
     }
-    
-    public void removeObserver(DownloadedObserver observer) {
-        mObservers.remove(observer);
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+        notifyProgress(this.progress);
+    }
+
+    // =====================================================================
+
+
+    // =====================================================================
+    private ArrayList<DownloadVideoRunnable.CompleteCallback> mCompleteCallbacks = new ArrayList<DownloadVideoRunnable.CompleteCallback>();
+    private ArrayList<DownloadVideoRunnable.ProgressCallback> mProgressCallbacks = new ArrayList<DownloadVideoRunnable.ProgressCallback>();
+
+    public void addCompleteCallback(DownloadVideoRunnable.CompleteCallback callback) {
+        mCompleteCallbacks.add(callback);
+    }
+
+    private void notifyComplete() {
+        for (DownloadVideoRunnable.CompleteCallback callback : mCompleteCallbacks) {
+            callback.onDownloadComplete();
+        }
+    }
+
+    public void addProgressCallback(DownloadVideoRunnable.ProgressCallback callback) {
+        mProgressCallbacks.add(callback);
+    }
+
+    private void notifyProgress(int progress) {
+        for (DownloadVideoRunnable.ProgressCallback callback : mProgressCallbacks) {
+            callback.onProgressUpdate(progress);
+        }
     }
     // =====================================================================
 

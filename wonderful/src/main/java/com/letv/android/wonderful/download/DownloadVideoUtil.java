@@ -6,7 +6,6 @@ import android.util.Log;
 import com.letv.android.wallpaper.display.DisplayTask.OnProgressListener;
 import com.letv.android.wonderful.Tags;
 import com.letv.android.wonderful.application.WonderfulApplication;
-import com.letv.android.wonderful.download.DownloadVideoTask.ProgressCallback;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +60,11 @@ public class DownloadVideoUtil {
         return false;
     }
 
-    public static boolean downloadFile(String path, String urlStr, ProgressCallback progressCallback) {
+    public static boolean downloadFile(String path, String urlStr, DownloadVideoRunnable.ProgressCallback progressCallback) {
+        if (path == null || urlStr == null) {
+            return false;
+        }
+
         final File file = new File(path);
         boolean isSuccess = checkOrMkDir(file.getParentFile());
         if (isSuccess) {

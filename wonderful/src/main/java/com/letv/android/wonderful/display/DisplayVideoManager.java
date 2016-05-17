@@ -64,6 +64,7 @@ public class DisplayVideoManager {
     public void display(String path, SurfaceTexture surfaceTexture) {
         Log.i(Tags.WONDERFUL_APP, "player display");
         Log.i(Tags.WONDERFUL_APP, "path = " + path);
+        Log.i(Tags.WONDERFUL_APP, "surfaceTexture = " + surfaceTexture);
         if (path != null && surfaceTexture != null) {
             // do nothing
         } else {

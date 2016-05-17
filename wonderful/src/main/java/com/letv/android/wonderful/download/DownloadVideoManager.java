@@ -5,11 +5,10 @@ import java.io.File;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class DownloadVideoMananger {
+public class DownloadVideoManager {
     private static Executor mSingleThreadExecutor = Executors.newSingleThreadExecutor();
 
-    public static void downloadVideo(final String url, String path, final DownloadVideoTask.ProgressCallback progressCallback, final DownloadVideoTask.CompleteCallback completeCallback) {
-        // new DownloadVideoTask(path, progressCallback, completeCallback).executeOnExecutor(DownloadVideoTask.THREAD_POOL_EXECUTOR, url);
+    public static void downloadVideo(final String url, String path, final DownloadVideoRunnable.ProgressCallback progressCallback, final DownloadVideoRunnable.CompleteCallback completeCallback) {
         final DownloadVideoRunnable runnable = new DownloadVideoRunnable(url, path, progressCallback, completeCallback);
         mSingleThreadExecutor.execute(runnable);
     }

@@ -20,11 +20,10 @@ import com.letv.android.wonderful.Tags;
 import com.letv.android.wonderful.adapter.VideoListAdapter;
 import com.letv.android.wonderful.display.DisplayVideoManager;
 import com.letv.android.wonderful.display.VideoDisplayManager;
+import com.letv.android.wonderful.download.DownloadVideoRunnable;
 import com.letv.android.wonderful.download.DownloadVideoUtil;
 import com.letv.android.wonderful.entity.WonderfulAlbum;
 import com.letv.android.wonderful.entity.WonderfulVideo;
-import com.letv.android.wonderful.util.MediaUtil;
-import com.letv.android.wonderful.view.DividerItemDecoration;
 
 import java.util.ArrayList;
 
@@ -88,9 +87,17 @@ public class AlbumVideosActivity extends AppCompatActivity {
     private void obServeVideos() {
         for (int i = 0; i < mAlbum.getVideos().size(); i++) {
             final int position = i;
-            mAlbum.getVideos().get(i).addObserver(new WonderfulVideo.DownloadedObserver() {
+            /*
+            mAlbum.getVideos().get(i).addDownloadCallback(new WonderfulVideo.DownloadedObserver() {
                 @Override
                 public void isDownloaded(boolean isDownloaded) {
+                    updateDownloadProgress(position);
+                }
+            });
+            */
+            mAlbum. getVideos().get(i).addCompleteCallback(new DownloadVideoRunnable.CompleteCallback() {
+                @Override
+                public void onDownloadComplete() {
                     updateDownloadProgress(position);
                 }
             });
